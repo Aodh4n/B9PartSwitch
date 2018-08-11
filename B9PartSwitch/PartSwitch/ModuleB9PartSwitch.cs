@@ -114,16 +114,8 @@ namespace B9PartSwitch
         public float Scale => scale;
         public float VolumeScale => scale * scale * scale;
 
-        public bool ManagesMaxTemp => subtypes.Any(subtype => subtype.ManagesMaxTemp);
-        public bool ManagesSkinMaxTemp => subtypes.Any(subtype => subtype.ManagesSkinMaxTemp);
-        public bool ManagesCrashTolerance => subtypes.Any(subtype => subtype.ManagesCrashTolerance);
-        public bool ManagesAttachNode => subtypes.Any(subtype => subtype.ManagesAttachNode);
-        public bool ManagesCoMOffset => subtypes.Any(subtype => subtype.ManagesCoMOffset);
-        public bool ManagesCoPOffset => subtypes.Any(subtype => subtype.ManagesCoPOffset);
-        public bool ManagesCoLOffset => subtypes.Any(subtype => subtype.ManagesCoLOffset);
-        public bool ManagesCenterOfBuoyancy => subtypes.Any(subtype => subtype.ManagesCenterOfBuoyancy);
-        public bool ManagesCenterOfDisplacement => subtypes.Any(subtype => subtype.ManagesCenterOfDisplacement);
-        public bool ManagesStackSymmetry => subtypes.Any(subtype => subtype.ManagesStackSymmetry);
+        public IEnumerable<object> PartAspectLocks => subtypes.SelectMany(subtype => subtype.PartAspectLocks);
+        public IEnumerable<object> PartAspectLocksOnOtherModules => part.Modules.OfType<ModuleB9PartSwitch>().Where(module => module != this).SelectMany(module => module.PartAspectLocks);
 
         #endregion
 
@@ -339,6 +331,8 @@ namespace B9PartSwitch
             CurrentSubtype.OnWasCopiedActiveSubtype();
         }
 
+        public bool HasPartAspectLock(object partAspectLock) => PartAspectLocks.Contains(PartAspectLock);
+
         #endregion
 
         #region Private Methods
@@ -522,61 +516,6 @@ namespace B9PartSwitch
                     {
                         error += $"\n  Two modules cannot manage the same attach node's postition: {attachNode.id}";
                     }
-                }
-
-                if (ManagesMaxTemp && otherModule.ManagesMaxTemp)
-                {
-                    error += "More than module is managing the part's maxTemp";
-                }
-
-                if (ManagesSkinMaxTemp && otherModule.ManagesSkinMaxTemp)
-                {
-                    error += "More than module is managing the part's skinMaxTemp";
-                }
-
-                if (ManagesCrashTolerance && otherModule.ManagesCrashTolerance)
-                {
-                    error += "More than module is managing the part's crashTolerance";
-                }
-
-                if (ManagesCrashTolerance && otherModule.ManagesCrashTolerance)
-                {
-                    error += "More than module is managing the part's crashTolerance";
-                }
-
-                if (ManagesAttachNode && otherModule.ManagesAttachNode)
-                {
-                    error += "More than module is managing the part's srfAttachNode";
-                }
-
-                if (ManagesCoMOffset && otherModule.ManagesCoMOffset)
-                {
-                    error += "More than module is managing the part's CoMOffset";
-                }
-
-                if (ManagesCoPOffset && otherModule.ManagesCoPOffset)
-                {
-                    error += "More than module is managing the part's CoPOffset";
-                }
-
-                if (ManagesCoLOffset && otherModule.ManagesCoLOffset)
-                {
-                    error += "More than module is managing the part's CoLOffset";
-                }
-
-                if (ManagesCenterOfBuoyancy && otherModule.ManagesCenterOfBuoyancy)
-                {
-                    error += "More than module is managing the part's CenterOfBuoyancy";
-                }
-
-                if (ManagesCenterOfDisplacement && otherModule.ManagesCenterOfDisplacement)
-                {
-                    error += "More than module is managing the part's CenterOfDisplacement";
-                }
-
-                if (ManagesStackSymmetry && otherModule.ManagesStackSymmetry)
-                {
-                    error += "More than module is managing the part's stackSymmetry";
                 }
 
                 if (error != "")
